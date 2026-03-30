@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>暹罗X｜配置后台</title>
+  <style>
+    :root {
+      --pink-main: #f6a9bc;
+      --pink-soft: #fce4eb;
+      --ivory: #fff8f4;
+      --gray-soft: #f3f3f1;
+      --gray-deep: #3e3a3a;
+      --text-main: #2f2a2a;
+      --text-muted: #746b6b;
+      --border-soft: rgba(62, 58, 58, 0.08);
+      --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.08);
+      --radius: 18px;
+      --radius-small: 12px;
+      --max-width: 1320px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+      color: var(--text-main);
+      background:
+        radial-gradient(circle at top left, rgba(246, 169, 188, 0.24), transparent 28%),
+        linear-gradient(180deg, #fffaf7 0%, var(--ivory) 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    .page {
+      width: min(calc(100% - 36px), var(--max-width));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 26px;
+    }
+
+    .topbar h1 {
+      margin: 0 0 8px;
+      font-size: clamp(30px, 4vw, 42px);
+      font-weight: 900;
+    }
+
+    .topbar p {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .topbar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .btn-primary {
+      background: var(--pink-main);
+      color: #fff;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--gray-deep);
+      border: 1px solid var(--border-soft);
+    }
+
+    .btn-ghost {
+      background: rgba(246, 169, 188, 0.14);
+      color: #9d5669;
+    }
+
+    .status-bar {
+      margin-bottom: 22px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.84);
+      box-shadow: var(--shadow-soft);
+      color: var(--text-muted);
+    }
+
+    .status-bar[data-tone="success"] {
+      color: #287a52;
+      background: rgba(223, 248, 234, 0.94);
+    }
+
+    .status-bar[data-tone="error"] {
+      color: #9b3f4f;
+      background: rgba(255, 227, 233, 0.94);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .sidebar,
+    .panel {
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 24px;
+      padding: 22px;
+    }
+
+    .sidebar h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .sidebar p,
+    .sidebar li {
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .sidebar ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .sidebar-links {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .editor-main {
+      display: grid;
+      gap: 18px;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .panel-header {
+      margin-bottom: 18px;
+    }
+
+    .panel-header h2 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .panel-header p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .grid-one {
+      display: grid;
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gray-deep);
+    }
+
+    .field small {
+      color: var(--text-muted);
+    }
+
+    .field input[type="text"],
+    .field input[type="url"],
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid rgba(62, 58, 58, 0.12);
+      border-radius: var(--radius-small);
+      background: #fff;
+      color: var(--text-main);
+    }
+
+    .field textarea {
+      min-height: 104px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--pink-main);
+      outline: 2px solid rgba(246, 169, 188, 0.16);
+    }
+
+    .image-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 180px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .image-preview {
+      overflow: hidden;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #f7eef0 0%, #f2efec 100%);
+      border: 1px solid rgba(62, 58, 58, 0.08);
+    }
+
+    .image-preview img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: contain;
+      background: linear-gradient(135deg, #f7eef0 0%, #f2efec 100%);
+    }
+
+    .upload-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .upload-wrap input[type="file"] {
+      max-width: 100%;
+    }
+
+    .card-editor {
+      display: grid;
+      gap: 16px;
+    }
+
+    .card-item {
+      padding: 18px;
+      border-radius: 18px;
+      background: var(--gray-soft);
+      border: 1px solid rgba(62, 58, 58, 0.06);
+    }
+
+    .card-item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .card-item-head h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .inline-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      min-height: 34px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--gray-deep);
+      cursor: pointer;
+    }
+
+    .mini-btn-danger {
+      background: rgba(255, 92, 122, 0.14);
+      color: #a04256;
+    }
+
+    .helper-note {
+      margin-top: 8px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .footer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 1080px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .page {
+        width: min(calc(100% - 24px), var(--max-width));
+        padding-top: 20px;
+      }
+
+      .topbar {
+        flex-direction: column;
+      }
+
+      .grid-two,
+      .image-row {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div>
+        <h1>暹罗X 配置后台</h1>
+        <p>这里可以集中调整官网的内容结构、图片和落地展示。当前默认内容已经接入一批从品牌 PPT 里挑出的首版视觉素材，保存后回到首页刷新即可查看。</p>
+      </div>
+
+      <div class="topbar-actions">
+        <a class="btn btn-secondary" href="index.html" target="_blank" rel="noopener noreferrer">打开官网预览</a>
+        <button class="btn btn-secondary" type="button" id="exportBtn">导出配置</button>
+        <button class="btn btn-secondary" type="button" id="importBtn">导入配置</button>
+        <button class="btn btn-ghost" type="button" id="resetBtn">恢复默认</button>
+        <button class="btn btn-primary" type="button" id="saveBtn">保存全部修改</button>
+      </div>
+    </header>
+
+    <div id="statusBar" class="status-bar">当前后台是本地版：配置保存在这个浏览器里，不需要服务器，也不会自动同步到其他设备。</div>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <h2>使用提醒</h2>
+        <ul>
+          <li>图片可以填线上 URL、本地相对路径，或者直接上传图片。</li>
+          <li>上传图片会转成浏览器本地数据，如果图片特别大，可能触发浏览器存储上限。</li>
+          <li>建议定期“导出配置”，避免清缓存后丢失内容。</li>
+          <li>代表作和产品列表都支持新增、删除和上下排序。</li>
+        </ul>
+
+        <div class="sidebar-links">
+          <a class="btn btn-secondary" href="#brandPanel">品牌信息</a>
+          <a class="btn btn-secondary" href="#heroPanel">首屏封面</a>
+          <a class="btn btn-secondary" href="#storyPanel">代表作精选</a>
+          <a class="btn btn-secondary" href="#philosophyPanel">创作理念</a>
+          <a class="btn btn-secondary" href="#productsPanel">落地好物</a>
+          <a class="btn btn-secondary" href="#followPanel">小红书引流</a>
+          <a class="btn btn-secondary" href="#footerPanel">页脚信息</a>
+        </div>
+      </aside>
+
+      <main class="editor-main">
+        <section id="brandPanel" class="panel"></section>
+        <section id="heroPanel" class="panel"></section>
+        <section id="storyPanel" class="panel"></section>
+        <section id="philosophyPanel" class="panel"></section>
+        <section id="productsPanel" class="panel"></section>
+        <section id="followPanel" class="panel"></section>
+        <section id="footerPanel" class="panel"></section>
+      </main>
+    </div>
+  </div>
+
+  <input id="importFileInput" type="file" accept="application/json" hidden>
+
+  <script src="site-config.js"></script>
+  <script>
+    const configStore = window.SIAMX_CONFIG;
+    const statusBar = document.getElementById("statusBar");
+    const importFileInput = document.getElementById("importFileInput");
+    let draft = configStore.getConfig();
+
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function getByPath(target, path) {
+      return path.split(".").reduce((current, key) => current == null ? undefined : current[key], target);
+    }
+
+    function setByPath(target, path, value) {
+      const segments = path.split(".");
+      const last = segments.pop();
+      let current = target;
+
+      segments.forEach((segment) => {
+        if (!(segment in current) || typeof current[segment] !== "object" || current[segment] === null) {
+          current[segment] = /^\d+$/.test(segment) ? [] : {};
+        }
+        current = current[segment];
+      });
+
+      current[last] = value;
+    }
+
+    function escapeSvgText(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function buildPreviewFallback(label) {
+      const text = escapeSvgText(label || "图片预览");
+      return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+          <defs>
+            <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#f6a9bc" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#fff8f4"/>
+            </linearGradient>
+          </defs>
+          <rect width="600" height="600" rx="36" fill="url(#bg)"/>
+          <circle cx="130" cy="136" r="54" fill="rgba(255,255,255,0.22)"/>
+          <circle cx="468" cy="438" r="88" fill="rgba(62,58,58,0.08)"/>
+          <rect x="70" y="388" width="460" height="92" rx="22" fill="rgba(255,255,255,0.36)"/>
+          <text x="300" y="280" text-anchor="middle" font-size="44" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-weight="700" fill="#2f2a2a">${text}</text>
+          <text x="300" y="440" text-anchor="middle" font-size="24" font-family="PingFang SC, Microsoft YaHei, sans-serif" fill="#4a4444">上传或填写图片地址</text>
+        </svg>
+      `)}`;
+    }
+
+    function setStatus(message, tone = "") {
+      statusBar.textContent = message;
+      statusBar.dataset.tone = tone;
+    }
+
+    function imageField(label, path, previewLabel, helper = "", accept = "image/*") {
+      const value = getByPath(draft, path) || "";
+      return `
+        <div class="field">
+          <label>${label}</label>
+          <div class="image-row">
+            <div class="grid-one">
+              <input type="text" data-path="${path}" data-preview-path="${path}" value="${escapeHTML(value)}" placeholder="填写图片 URL、本地路径，或使用下方上传">
+              <div class="upload-wrap">
+                <input type="file" accept="${accept}" data-upload-path="${path}" aria-label="${label}上传文件">
+              </div>
+              ${helper ? `<small>${helper}</small>` : ""}
+            </div>
+            <div class="image-preview">
+              <img data-preview-image="${path}" src="${escapeHTML(value || buildPreviewFallback(previewLabel))}" alt="${escapeHTML(previewLabel)}">
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function textField(label, path, placeholder = "") {
+      return `
+        <div class="field">
+          <label>${label}</label>
+          <input type="text" data-path="${path}" value="${escapeHTML(getByPath(draft, path) || "")}" placeholder="${escapeHTML(placeholder)}">
+        </div>
+      `;
+    }
+
+    function selectField(label, path, options) {
+      const currentValue = getByPath(draft, path) || "";
+      return `
+        <div class="field">
+          <label>${label}</label>
+          <select data-path="${path}">
+            ${options.map((option) => `
+              <option value="${escapeHTML(option.value)}" ${option.value === currentValue ? "selected" : ""}>
+                ${escapeHTML(option.label)}
+              </option>
+            `).join("")}
+          </select>
+        </div>
+      `;
+    }
+
+    function textAreaField(label, path, placeholder = "") {
+      return `
+        <div class="field">
+          <label>${label}</label>
+          <textarea data-path="${path}" placeholder="${escapeHTML(placeholder)}">${escapeHTML(getByPath(draft, path) || "")}</textarea>
+        </div>
+      `;
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("\"", "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function renderBrandPanel() {
+      document.getElementById("brandPanel").innerHTML = `
+        <div class="panel-header">
+          <h2>品牌信息</h2>
+          <p>控制官网左上角的品牌名和副标题。</p>
+        </div>
+        <div class="grid-two">
+          ${textField("品牌主标题", "brand.title", "例如：暹罗X")}
+          ${textField("品牌副标题", "brand.subtitle", "例如：沙雕治愈 · 反完美主义 · 四荤一素")}
+        </div>
+      `;
+    }
+
+    function renderHeroPanel() {
+      document.getElementById("heroPanel").innerHTML = `
+        <div class="panel-header">
+          <h2>首屏封面</h2>
+          <p>首屏现在更像品牌封面页。默认已经预置了从 PPT 里挑出的品牌主视觉，你也可以继续替换成更想强调的图。</p>
+        </div>
+        <div class="grid-two">
+          ${textField("顶部气泡文案", "hero.eyebrow")}
+          ${textField("主标题", "hero.title")}
+          ${textField("副标题", "hero.subtitle")}
+          ${textField("Banner 图片说明（alt）", "hero.image.alt")}
+        </div>
+        <div class="grid-one">
+          ${textAreaField("首屏正文", "hero.copy")}
+          ${imageField("Banner 图片", "hero.image.src", "首屏 Banner")}
+        </div>
+      `;
+    }
+
+    function renderStoryPanel() {
+      const worksHTML = draft.story.items.map((item, index) => `
+        <div class="card-item">
+          <div class="card-item-head">
+            <h3>代表作 ${index + 1}</h3>
+            <div class="inline-actions">
+              <button class="mini-btn" type="button" data-action="move-story-up" data-index="${index}">上移</button>
+              <button class="mini-btn" type="button" data-action="move-story-down" data-index="${index}">下移</button>
+              <button class="mini-btn mini-btn-danger" type="button" data-action="remove-story-item" data-index="${index}">删除</button>
+            </div>
+          </div>
+          <div class="grid-two">
+            ${textField("Tab 名称", `story.items.${index}.tabLabel`)}
+            ${textField("顶部标签", `story.items.${index}.badge`)}
+            ${textField("作品标题", `story.items.${index}.title`)}
+            ${selectField("媒体类型", `story.items.${index}.type`, [
+              { value: "image", label: "图片" },
+              { value: "gif", label: "GIF" },
+              { value: "video", label: "视频" }
+            ])}
+            ${textField("媒体说明（alt）", `story.items.${index}.media.alt`)}
+            ${textField("占位色值", `story.items.${index}.media.fallbackTone`, "例如：#f6a9bc")}
+          </div>
+          <div class="grid-one">
+            ${textAreaField("作品简介", `story.items.${index}.description`)}
+            ${imageField(
+              "媒体地址",
+              `story.items.${index}.media.src`,
+              item.title || `代表作 ${index + 1}`,
+              "图片/GIF 可直接填写媒体地址；视频建议填 MP4 地址或上传 MP4 文件。",
+              "image/*,video/*"
+            )}
+            ${imageField(
+              "视频封面（仅视频可填）",
+              `story.items.${index}.media.poster`,
+              `${item.title || `代表作 ${index + 1}`}封面`,
+              "如果媒体类型是视频，建议再补一张封面图；图片/GIF 类型可留空。"
+            )}
+          </div>
+        </div>
+      `).join("");
+
+      document.getElementById("storyPanel").innerHTML = `
+        <div class="panel-header">
+          <h2>代表作精选</h2>
+          <p>这里控制官网中最像“作品集”的模块。建议按品牌封面、内容案例、线下活动、联名合作、空间落地这类线索来编排，前台一次只展示 1 个作品，最多 10 个。</p>
+        </div>
+        <div class="grid-two">
+          ${textField("板块标题", "story.sectionTitle")}
+          ${textField("模块短标签", "story.eyebrow")}
+          ${textField("模块主标题", "story.introTitle")}
+        </div>
+        <div class="grid-one">
+          ${textAreaField("模块引导文案", "story.introCopy")}
+          <div class="inline-actions">
+            <button class="btn btn-secondary" type="button" data-action="add-story-item">新增代表作</button>
+          </div>
+          <div class="card-editor">${worksHTML}</div>
+          <div class="helper-note">最多可配置 10 个作品。当前默认已接入 PPT 里的品牌封面、线下展陈、联名和快闪空间图；Tab 名称建议控制在 8 个字以内。</div>
+        </div>
+      `;
+    }
+
+    function renderPhilosophyPanel() {
+      const cardsHTML = draft.philosophy.cards.map((card, index) => `
+        <div class="card-item">
+          <div class="card-item-head">
+            <h3>理念卡片 ${index + 1}</h3>
+          </div>
+          <div class="grid-two">
+            ${textField("图标 / Emoji", `philosophy.cards.${index}.icon`)}
+            ${textField("标题", `philosophy.cards.${index}.title`)}
+          </div>
+          <div class="grid-one">
+            ${textAreaField("描述", `philosophy.cards.${index}.text`)}
+          </div>
+        </div>
+      `).join("");
+
+      document.getElementById("philosophyPanel").innerHTML = `
+        <div class="panel-header">
+          <h2>创作理念</h2>
+          <p>官网默认展示 3 张理念卡片，这里可以改图标、标题和文案。</p>
+        </div>
+        <div class="grid-one">
+          ${textField("板块标题", "philosophy.sectionTitle")}
+          <div class="card-editor">${cardsHTML}</div>
+        </div>
+      `;
+    }
+
+    function renderProductsPanel() {
+      const itemsHTML = draft.products.items.map((item, index) => `
+        <div class="card-item">
+          <div class="card-item-head">
+            <h3>产品 ${index + 1}</h3>
+            <div class="inline-actions">
+              <button class="mini-btn" type="button" data-action="move-product-up" data-index="${index}">上移</button>
+              <button class="mini-btn" type="button" data-action="move-product-down" data-index="${index}">下移</button>
+              <button class="mini-btn mini-btn-danger" type="button" data-action="remove-product" data-index="${index}">删除</button>
+            </div>
+          </div>
+          <div class="grid-two">
+            ${textField("产品分类标签", `products.items.${index}.tag`)}
+            ${textField("产品名称", `products.items.${index}.title`)}
+            ${textField("图片说明（alt）", `products.items.${index}.image.alt`)}
+            ${textField("占位色值", `products.items.${index}.image.fallbackTone`, "例如：#f6a9bc")}
+          </div>
+          <div class="grid-one">
+            ${textAreaField("产品简介", `products.items.${index}.text`)}
+            ${imageField("产品图片", `products.items.${index}.image.src`, item.title || `产品 ${index + 1}`, "建议上传压缩后的 WebP 或填可访问的图片地址。")}
+          </div>
+        </div>
+      `).join("");
+
+      document.getElementById("productsPanel").innerHTML = `
+        <div class="panel-header">
+          <h2>落地好物</h2>
+          <p>这一块不必只放单个 SKU，也可以放联名套组、展陈陈列、快闪空间等更能体现品牌落地感的内容。</p>
+        </div>
+        <div class="grid-one">
+          ${textField("板块标题", "products.sectionTitle")}
+          ${textAreaField("板块引导文案", "products.intro")}
+          <div class="inline-actions">
+            <button class="btn btn-secondary" type="button" data-action="add-product">新增产品</button>
+          </div>
+          <div class="card-editor">${itemsHTML}</div>
+          <div class="helper-note">更推荐上传横向图或完整产品图，首页会按更适合提案图的比例展示，避免把图裁得太碎。</div>
+        </div>
+      `;
+    }
+
+    function renderFollowPanel() {
+      document.getElementById("followPanel").innerHTML = `
+        <div class="panel-header">
+          <h2>小红书引流</h2>
+          <p>这里控制引流区主文案、按钮文字和跳转地址。</p>
+        </div>
+        <div class="grid-two">
+          ${textField("引流标题", "follow.title")}
+          ${textField("按钮文字", "follow.buttonText")}
+          ${textField("小红书主页链接", "follow.link", "留空则按钮不跳转")}
+        </div>
+        <div class="grid-one">
+          ${textAreaField("引流说明文案", "follow.copy")}
+        </div>
+      `;
+    }
+
+    function renderFooterPanel() {
+      document.getElementById("footerPanel").innerHTML = `
+        <div class="panel-header">
+          <h2>页脚信息</h2>
+          <p>这里可以调整版权信息、账号名和购买说明。</p>
+        </div>
+        <div class="grid-one">
+          ${textField("版权信息", "footer.copyright")}
+          ${textField("账号显示", "footer.account")}
+          ${textAreaField("页脚说明", "footer.note")}
+        </div>
+      `;
+    }
+
+    function renderAllPanels() {
+      renderBrandPanel();
+      renderHeroPanel();
+      renderStoryPanel();
+      renderPhilosophyPanel();
+      renderProductsPanel();
+      renderFollowPanel();
+      renderFooterPanel();
+      refreshAllPreviews();
+    }
+
+    function refreshPreview(path) {
+      const preview = document.querySelector(`[data-preview-image="${CSS.escape(path)}"]`);
+      if (!preview) {
+        return;
+      }
+
+      let value = getByPath(draft, path);
+      let titlePath = path.includes("products.items")
+        ? path.replace(".image.src", ".title")
+        : path.replace(".src", ".alt");
+
+      if (path.includes("story.items") && path.endsWith(".media.src")) {
+        const typePath = path.replace(".media.src", ".type");
+        const posterPath = path.replace(".media.src", ".media.poster");
+        const titleSourcePath = path.replace(".media.src", ".title");
+        titlePath = titleSourcePath;
+        if (getByPath(draft, typePath) === "video" && getByPath(draft, posterPath)) {
+          value = getByPath(draft, posterPath);
+        }
+      }
+
+      if (path.includes("story.items") && path.endsWith(".media.poster")) {
+        titlePath = path.replace(".media.poster", ".title");
+      }
+
+      const label = getByPath(draft, titlePath) || "图片预览";
+      preview.src = value && String(value).trim() ? String(value).trim() : buildPreviewFallback(label);
+      preview.onerror = () => {
+        preview.src = buildPreviewFallback(label);
+      };
+    }
+
+    function refreshAllPreviews() {
+      document.querySelectorAll("[data-preview-image]").forEach((preview) => {
+        const path = preview.dataset.previewImage;
+        refreshPreview(path);
+      });
+    }
+
+    function addProduct() {
+      const template = clone(configStore.defaultConfig.products.items[0]);
+      template.title = "新的周边产品";
+      template.tag = "周边分类";
+      template.text = "这里填写新的产品简介。";
+      template.image.alt = "新的周边产品图片";
+      template.image.src = "";
+      template.image.fallbackLabel = "新的周边产品";
+      draft.products.items.push(template);
+      renderProductsPanel();
+      setStatus("已新增一个产品卡片，记得保存。");
+    }
+
+    function addStoryItem() {
+      if (draft.story.items.length >= 10) {
+        setStatus("代表作最多只能配置 10 个。", "error");
+        return;
+      }
+
+      const template = clone(configStore.defaultConfig.story.items[0]);
+      template.tabLabel = "新的代表作";
+      template.badge = "图片作品";
+      template.title = "新的代表作标题";
+      template.description = "这里填写新的作品说明。";
+      template.type = "image";
+      template.media.src = "";
+      template.media.alt = "新的代表作图片";
+      template.media.poster = "";
+      template.media.fallbackLabel = "新的代表作";
+      draft.story.items.push(template);
+      renderStoryPanel();
+      setStatus("已新增一个代表作，记得保存。");
+    }
+
+    function moveProduct(index, direction) {
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= draft.products.items.length) {
+        return;
+      }
+
+      const [item] = draft.products.items.splice(index, 1);
+      draft.products.items.splice(targetIndex, 0, item);
+      renderProductsPanel();
+      setStatus("产品顺序已调整，记得保存。");
+    }
+
+    function moveStoryItem(index, direction) {
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= draft.story.items.length) {
+        return;
+      }
+
+      const [item] = draft.story.items.splice(index, 1);
+      draft.story.items.splice(targetIndex, 0, item);
+      renderStoryPanel();
+      setStatus("代表作顺序已调整，记得保存。");
+    }
+
+    document.addEventListener("input", (event) => {
+      const target = event.target;
+      if (!target.dataset.path) {
+        return;
+      }
+
+      setByPath(draft, target.dataset.path, target.value);
+      if (target.dataset.previewPath) {
+        refreshPreview(target.dataset.previewPath);
+      }
+    });
+
+    document.addEventListener("change", (event) => {
+      const target = event.target;
+
+      if (target.dataset.path) {
+        setByPath(draft, target.dataset.path, target.value);
+        if (target.dataset.previewPath) {
+          refreshPreview(target.dataset.previewPath);
+        }
+        if (target.dataset.path.endsWith(".type")) {
+          refreshPreview(target.dataset.path.replace(".type", ".media.src"));
+          refreshPreview(target.dataset.path.replace(".type", ".media.poster"));
+        }
+      }
+
+      if (target.dataset.uploadPath && target.files && target.files[0]) {
+        const reader = new FileReader();
+        const file = target.files[0];
+        reader.onload = () => {
+          setByPath(draft, target.dataset.uploadPath, reader.result);
+          const linkedInput = document.querySelector(`[data-path="${CSS.escape(target.dataset.uploadPath)}"]`);
+          if (linkedInput) {
+            linkedInput.value = reader.result;
+          }
+          refreshPreview(target.dataset.uploadPath);
+          setStatus(`已载入图片：${file.name}，保存后首页即可使用。`);
+        };
+        reader.onerror = () => {
+          setStatus("图片读取失败，请重试。", "error");
+        };
+        reader.readAsDataURL(file);
+        target.value = "";
+      }
+
+      if (target === importFileInput && target.files && target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            draft = configStore.normalizeConfig(JSON.parse(reader.result));
+            renderAllPanels();
+            setStatus("配置文件已导入。确认无误后点击“保存全部修改”。", "success");
+          } catch (error) {
+            setStatus("导入失败：JSON 格式不正确。", "error");
+          }
+        };
+        reader.onerror = () => {
+          setStatus("导入失败：文件读取异常。", "error");
+        };
+        reader.readAsText(target.files[0], "utf-8");
+        target.value = "";
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      const action = event.target.dataset.action;
+      if (!action) {
+        return;
+      }
+
+      const index = Number(event.target.dataset.index);
+      if (action === "add-product") {
+        addProduct();
+      }
+
+      if (action === "add-story-item") {
+        addStoryItem();
+      }
+
+      if (action === "remove-product") {
+        if (draft.products.items.length === 1) {
+          setStatus("至少保留 1 个产品卡片。", "error");
+          return;
+        }
+        draft.products.items.splice(index, 1);
+        renderProductsPanel();
+        setStatus("产品已删除，记得保存。");
+      }
+
+      if (action === "remove-story-item") {
+        if (draft.story.items.length === 1) {
+          setStatus("至少保留 1 个代表作。", "error");
+          return;
+        }
+        draft.story.items.splice(index, 1);
+        renderStoryPanel();
+        setStatus("代表作已删除，记得保存。");
+      }
+
+      if (action === "move-product-up") {
+        moveProduct(index, -1);
+      }
+
+      if (action === "move-product-down") {
+        moveProduct(index, 1);
+      }
+
+      if (action === "move-story-up") {
+        moveStoryItem(index, -1);
+      }
+
+      if (action === "move-story-down") {
+        moveStoryItem(index, 1);
+      }
+    });
+
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      try {
+        draft = configStore.saveConfig(draft);
+        setStatus("配置已保存。现在回到 index.html 刷新页面，就能看到最新内容。", "success");
+      } catch (error) {
+        setStatus("保存失败：浏览器本地存储可能已满。请先压缩图片或导出后清理。", "error");
+      }
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      const confirmed = window.confirm("确定恢复默认配置吗？当前未导出的本地修改会被覆盖。");
+      if (!confirmed) {
+        return;
+      }
+
+      draft = configStore.resetConfig();
+      renderAllPanels();
+      setStatus("已恢复默认配置。", "success");
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      const normalized = configStore.normalizeConfig(draft);
+      const blob = new Blob([JSON.stringify(normalized, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "siamx-site-config.json";
+      link.click();
+      URL.revokeObjectURL(url);
+      setStatus("配置 JSON 已导出。");
+    });
+
+    document.getElementById("importBtn").addEventListener("click", () => {
+      importFileInput.click();
+    });
+
+    renderAllPanels();
+  </script>
+</body>
+</html>
